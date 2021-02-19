@@ -6,13 +6,14 @@ contract Lottery {
     enum LOTTERY_STATE { OPEN, CLOSED, CALCULATING_WINNER }
     LOTTERY_STATE public lottery_state;
     address payable[] public players;
-    address payable private constant owner_beneficiary = 0xd37D094E65df5FC609e472561DDcc1455a376D10;
+    address payable private owner_beneficiary;
     uint256 public lotteryId;
     uint256 public ENTER_PRICE;
     uint256 public percentageLessPriceResult; 
     using SafeMath for uint256;
 
-    constructor() public {
+    constructor(address _owner_beneficiary) public {
+        owner_beneficiary = payable(address(_owner_beneficiary));
         lotteryId = 0;
         lottery_state = LOTTERY_STATE.CLOSED;  
         ENTER_PRICE = 1 ether;
@@ -52,4 +53,5 @@ contract Lottery {
     function getBalance() public view returns (uint256){
         return address(this).balance;
     }
+    
 }

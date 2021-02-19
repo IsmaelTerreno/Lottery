@@ -1,5 +1,6 @@
 const Lottery = artifacts.require("Lottery");
 
+
 contract("Lottery", async accounts => {
     it("should put 1 ETH in the lotery and deliver to the winner account", async () => {
         let instance = await Lottery.deployed();
