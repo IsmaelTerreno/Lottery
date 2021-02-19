@@ -7,7 +7,7 @@ contract("Lottery", async accounts => {
         const account_two = accounts[1];
         const account_three = accounts[2];
         const account_four = accounts[3];
-        await instance.start_new_lottery.call({ from: account_one });
+        await instance.start_new_lottery.sendTransaction({ from: account_one });
         await instance.enter.sendTransaction({from: account_one, value: web3.utils.toWei("1", "ether") });
         await instance.enter.sendTransaction({from: account_two, value: web3.utils.toWei("1", "ether") });
         await instance.enter.sendTransaction({from: account_three, value: web3.utils.toWei("1", "ether") });
