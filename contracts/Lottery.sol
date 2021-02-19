@@ -12,11 +12,11 @@ contract Lottery {
     uint256 public percentageLessPriceResult; 
     using SafeMath for uint256;
 
-    constructor(address _owner_beneficiary) public {
+    constructor(address _owner_beneficiary, uint256 enter_price) public {
         owner_beneficiary = payable(address(_owner_beneficiary));
         lotteryId = 0;
         lottery_state = LOTTERY_STATE.CLOSED;  
-        ENTER_PRICE = 1 ether;
+        ENTER_PRICE = enter_price;
         percentageLessPriceResult = uint256(20);
     }
     
@@ -26,22 +26,22 @@ contract Lottery {
     }
 
     function enter() external payable {
-        require(msg.value == ENTER_PRICE, "The price to enter is not correct.");
-        //assert(lottery_state == LOTTERY_STATE.OPEN);
+        require(uint256(msg.value) == ENTER_PRICE, "The price to enter is not correct.");
+        require(lottery_state == LOTTERY_STATE.OPEN, "The lottery hasn't even started!");
         players.push(msg.sender);
     } 
     
     function pickWinner() external {
         require(lottery_state == LOTTERY_STATE.OPEN, "The lottery hasn't even started!");
         lottery_state = LOTTERY_STATE.CALCULATING_WINNER;
-        require(lottery_state == LOTTERY_STATE.CALCULATING_WINNER, "You aren't at that stage yet!");
+        require(lottery_state == LOTTERY_STATE.CALCULATING_WINNER, "Is already calculating the winner.");
         lotteryId = getRandomWinner();
         payable(owner_beneficiary).transfer(calculateBenefitResult());
         players[lotteryId].transfer(getBalance());
         lottery_state = LOTTERY_STATE.CLOSED;
     }
 
-    function getRandomWinner() private view returns (uint256) {
+    function getRandomWinner() private pure returns (uint256) {
         return 1;
     }
     function calculateBenefitResult() private view returns(uint256) {
