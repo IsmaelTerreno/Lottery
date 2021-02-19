@@ -34,13 +34,16 @@ contract Lottery {
     function pickWinner() external {
         require(lottery_state == LOTTERY_STATE.OPEN, "The lottery hasn't even started!");
         lottery_state = LOTTERY_STATE.CALCULATING_WINNER;
-        lotteryId = 1;
-        // require(lottery_state == LOTTERY_STATE.CALCULATING_WINNER, "You aren't at that stage yet!");
+        require(lottery_state == LOTTERY_STATE.CALCULATING_WINNER, "You aren't at that stage yet!");
+        lotteryId = getRandomWinner();
         payable(owner_beneficiary).transfer(calculateBenefitResult());
         players[lotteryId].transfer(getBalance());
         lottery_state = LOTTERY_STATE.CLOSED;
     }
 
+    function getRandomWinner() private view returns (uint256) {
+        return 1;
+    }
     function calculateBenefitResult() private view returns(uint256) {
         return getPercentageValueOf(percentageLessPriceResult, getBalance());
     }
