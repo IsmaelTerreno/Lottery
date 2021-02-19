@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "test": "truffle test"
+  },
+  "dependencies": {
+    "@chainlink/contracts": "^0.1.4",
+    "@openzeppelin/contracts": "3.4.0",
+    "truffle-hdwallet-provider": "^1.0.6"
+  }
+}
