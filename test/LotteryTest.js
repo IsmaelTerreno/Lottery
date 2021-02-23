@@ -91,5 +91,18 @@ contract("Lottery", async accounts => {
         await instance.enter.sendTransaction({from: account_three, value: ENTER_PRICE });
         await instance.enter.sendTransaction({from: account_four, value: ENTER_PRICE });
         await instance.pickWinner.sendTransaction({ from: account_one });
+        const result = await instance.getLastWinner.call({ from: account_one });
+        let winner = result[1];
+        let value = web3.utils.fromWei(result[2].toString(), "ether");
+        assert.equal(
+            winner =! '',
+            true,
+            "Winner address is not correct."
+        );
+        assert.equal(
+            parseFloat(value) > parseFloat(0),
+            true,
+            "Winner value is not correct."
+        );
     });
 });
