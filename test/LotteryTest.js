@@ -40,14 +40,20 @@ contract("Lottery", async accounts => {
         await instance.pickWinner.sendTransaction({ from: account_one });
         const result = await instance.getLastWinner.call({ from: account_one });
         let winner = result[1];
+        let value = web3.utils.fromWei(result[2].toString(), "ether");
         assert.equal(
             winner =! '',
             true,
             "Winner address is not correct."
         );
+        assert.equal(
+            parseFloat(value) > parseFloat(0),
+            true,
+            "Winner value is not correct."
+        );
     });
 
-    xit("should put 0.2 ETH in the lotery and deliver to the winner account", async () => {
+    it(`should put ${ENTER_PRICE} Wei in the lotery and deliver to the winner account with 4 accounts`, async () => {
         let instance = await Lottery.deployed();
         const account_one = accounts[0];
         const account_two = accounts[1];
@@ -58,7 +64,6 @@ contract("Lottery", async accounts => {
         await instance.enter.sendTransaction({from: account_two, value: ENTER_PRICE });
         await instance.enter.sendTransaction({from: account_three, value: ENTER_PRICE });
         await instance.enter.sendTransaction({from: account_four, value: ENTER_PRICE });
-        let balance = await instance.getBalance.call({ from: account_one });
         await instance.pickWinner.sendTransaction({ from: account_one });
     });
 });
