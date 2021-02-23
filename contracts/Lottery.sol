@@ -21,6 +21,7 @@ contract Lottery {
     event NewWinnerAdded(uint128 fromBlock, address owner, uint amount);
     event LotteryHasEnded();
     event CalculatingWinner();
+    event LotteryHasStarted(uint256 enter_price);
 
     CheckpointWinner[] winnersHistory;
 
@@ -35,6 +36,7 @@ contract Lottery {
     function start_new_lottery() external {
         require(lottery_state == LOTTERY_STATE.CLOSED, "Can't start a new lottery yet");
         lottery_state = LOTTERY_STATE.OPEN;
+        emit LotteryHasStarted(ENTER_PRICE);
     }
 
     function enter() external payable {
@@ -61,15 +63,13 @@ contract Lottery {
         return (winner.fromBlock, winner.winner, winner.value);
     }
 
-    function updateWinnerHistory(address _address, uint256 amount) private {
-        winnersHistory.push(CheckpointWinner(
-            {
-                fromBlock: uint128(block.number),
-                value: amount,
-                winner: _address
+    function getWinnerAtBlock(uint128 _fromBlock) external view returns(bool,uint128, address, uint256){
+        for(uint i = 0; i<winnersHistory.length; i++){
+            if(winnersHistory[i].fromBlock == _fromBlock){
+                return (true,winnersHistory[i].fromBlock, winnersHistory[i].winner, winnersHistory[i].value);
             }
-        ));
-        emit NewWinnerAdded(uint128(block.number), _address, amount);
+        }
+        return(false, uint128(0), address(0),uint256(0));
     }
 
     function getMainBalance() external view returns (uint){
@@ -82,6 +82,17 @@ contract Lottery {
 
     function getRandomWinner() private pure returns (uint256) {
         return 1;
+    }
+
+    function updateWinnerHistory(address _address, uint256 amount) private {
+        winnersHistory.push(CheckpointWinner(
+            {
+                fromBlock: uint128(block.number),
+                value: amount,
+                winner: _address
+            }
+        ));
+        emit NewWinnerAdded(uint128(block.number), _address, amount);
     }
 
     function calculateBenefitResult() private view returns(uint256) {
