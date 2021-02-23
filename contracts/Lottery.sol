@@ -79,6 +79,7 @@ contract Lottery {
     function getStatus() external view returns (LOTTERY_STATE){
         return lottery_state;
     }
+    
     // TODO: Use Chainlink VRF to generate real random nubers.
     function getRandomWinner() private pure returns (uint256) {
         return 1;
