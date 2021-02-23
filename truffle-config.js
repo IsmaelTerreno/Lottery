@@ -1,3 +1,10 @@
+require('dotenv').config();
+
+const APP_CONFIG = {
+    OWNER_BENEFICIARY: process.env.OWNER_BENEFICIARY,
+    ENTER_PRICE_LOTTERY_IN_ETHER: process.env.ENTER_PRICE_LOTTERY_IN_ETHER,
+};
+
 /**
  * Use this file to configure your truffle project. It's seeded with some
  * common settings for different networks and features like migrations,
@@ -25,6 +32,7 @@
 // const mnemonic = fs.readFileSync(".secret").toString().trim();
 
 module.exports = {
+  APP_CONFIG,
   /**
    * Networks define how you connect to your ethereum client and let you set the
    * defaults web3 uses to send transactions. If you don't specify one truffle

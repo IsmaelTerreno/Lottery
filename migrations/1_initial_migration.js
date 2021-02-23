@@ -1,11 +1,8 @@
-//const Migrations = artifacts.require("Migrations");
-const FAssetToken = artifacts.require("FAssetToken");
+const { APP_CONFIG } = require("../truffle-config");
 const Lottery = artifacts.require("Lottery");
-module.exports = function (deployer) {
-  //deployer.deploy(Migrations);
-  deployer.deploy(FAssetToken, '0xdF9585FA2F84Eb334135c37aa2060Ad5812C0a42');
-  const enter_price = web3.utils.toWei("0.2", "ether");
-  const owner_beneficiary = '0x9982f781Ac9853db1c04a3534ce40d93e7cC473c';
+module.exports = (deployer) => {
+  const enter_price = web3.utils.toWei(APP_CONFIG.ENTER_PRICE_LOTTERY_IN_ETHER, "ether");
+  const owner_beneficiary = APP_CONFIG.OWNER_BENEFICIARY;
   deployer.deploy(
     Lottery, 
     owner_beneficiary, 

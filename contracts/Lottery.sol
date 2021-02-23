@@ -12,6 +12,18 @@ contract Lottery {
     uint256 public percentageLessPriceResult; 
     using SafeMath for uint256;
 
+    struct  CheckpointWinner {
+        uint256 value;
+        uint128 fromBlock;
+        address winner;
+    }
+
+    event NewWinnerAdded(uint128 fromBlock, address owner, uint amount);
+    event LotteryHasEnded();
+    event CalculatingWinner();
+
+    CheckpointWinner[] winnersHistory;
+
     constructor(address _owner_beneficiary, uint256 enter_price) public {
         owner_beneficiary = payable(address(_owner_beneficiary));
         lotteryId = 0;
@@ -21,7 +33,7 @@ contract Lottery {
     }
     
     function start_new_lottery() external {
-        require(lottery_state == LOTTERY_STATE.CLOSED, "can't start a new lottery yet");
+        require(lottery_state == LOTTERY_STATE.CLOSED, "Can't start a new lottery yet");
         lottery_state = LOTTERY_STATE.OPEN;
     }
 
@@ -34,16 +46,44 @@ contract Lottery {
     function pickWinner() external {
         require(lottery_state == LOTTERY_STATE.OPEN, "The lottery hasn't even started!");
         lottery_state = LOTTERY_STATE.CALCULATING_WINNER;
+        emit CalculatingWinner();
         require(lottery_state == LOTTERY_STATE.CALCULATING_WINNER, "Is already calculating the winner.");
         lotteryId = getRandomWinner();
         payable(owner_beneficiary).transfer(calculateBenefitResult());
+        updateWinnerHistory(players[lotteryId], getBalance());
         players[lotteryId].transfer(getBalance());
         lottery_state = LOTTERY_STATE.CLOSED;
+        emit LotteryHasEnded();
+    }
+
+    function getLastWinner() external view returns(uint128, address, uint256){
+        CheckpointWinner memory winner = winnersHistory[winnersHistory.length - 1];
+        return (winner.fromBlock, winner.winner, winner.value);
+    }
+
+    function updateWinnerHistory(address _address, uint256 amount) private {
+        winnersHistory.push(CheckpointWinner(
+            {
+                fromBlock: uint128(block.number),
+                value: amount,
+                winner: _address
+            }
+        ));
+        emit NewWinnerAdded(uint128(block.number), _address, amount);
+    }
+
+    function getMainBalance() external view returns (uint){
+        return address(this).balance;
+    }
+
+    function getStatus() external view returns (LOTTERY_STATE){
+        return lottery_state;
     }
 
     function getRandomWinner() private pure returns (uint256) {
         return 1;
     }
+
     function calculateBenefitResult() private view returns(uint256) {
         return getPercentageValueOf(percentageLessPriceResult, getBalance());
     }
@@ -53,8 +93,8 @@ contract Lottery {
         return result.div(uint256(100)) ;
     }
 
-    function getBalance() public view returns (uint256){
+    function getBalance() private view returns (uint256){
         return address(this).balance;
     }
-    
+
 }
