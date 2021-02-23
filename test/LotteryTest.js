@@ -40,7 +40,6 @@ contract("Lottery", async accounts => {
         await instance.pickWinner.sendTransaction({ from: account_one });
         const result = await instance.getLastWinner.call({ from: account_one });
         let winner = result[1];
-        let fromBlock = result[0];
         let value = web3.utils.fromWei(result[2].toString(), "ether");
         assert.equal(
             winner =! '',
@@ -49,25 +48,6 @@ contract("Lottery", async accounts => {
         );
         assert.equal(
             parseFloat(value) > parseFloat(0),
-            true,
-            "Winner value is not correct."
-        );
-        const result2 = await instance.getWinnerAtBlock.call(fromBlock.toNumber(), { from: account_one });
-        let isFound = result2[0];
-        let winnerAtBlock = result2[2];
-        let valueAtBlock = web3.utils.fromWei(result2[3].toString(), "ether");
-        assert.equal(
-            isFound,
-            true,
-            "Winner not found at block history."
-        );
-        assert.equal(
-            winnerAtBlock =! '',
-            true,
-            "Winner address is not correct."
-        );
-        assert.equal(
-            parseFloat(valueAtBlock) > parseFloat(0),
             true,
             "Winner value is not correct."
         );
