@@ -8,7 +8,11 @@ contract("Lottery", async accounts => {
     it("should start a new lottery", async () => {
         let instance = await Lottery.deployed();
         const account_one = accounts[0];
-        await instance.start_new_lottery.sendTransaction({ from: account_one });
+        const startDate = new Date();
+        const endDate = new Date();
+        const numberOfDayToAdd = 1;
+        endDate.setDate(endDate.getDate() + numberOfDayToAdd );
+        await instance.start_new_lottery.sendTransaction(startDate.getTime(), endDate.getTime(),{ from: account_one });
         status = await instance.getStatus.call({ from: account_one });
         assert.equal(
             status.toNumber(),
@@ -37,10 +41,16 @@ contract("Lottery", async accounts => {
     it(`should pick the winner and deliver EHT to the winner account`, async () => {
         let instance = await Lottery.deployed();
         const account_one = accounts[0];
-        await instance.pickWinner.sendTransaction({ from: account_one });
+        await instance.pickWinner.sendTransaction(new Date().getTime() ,{ from: account_one });
         const result = await instance.getLastWinner.call({ from: account_one });
-        let winner = result[1];
-        let value = web3.utils.fromWei(result[2].toString(), "ether");
+        let isWinnerFound = result[0];
+        assert.equal(
+            isWinnerFound,
+            true,
+            "No Winner address found."
+        );
+        let winner = result[2];
+        let value = web3.utils.fromWei(result[3].toString(), "ether");
         assert.equal(
             winner =! '',
             true,
@@ -57,7 +67,13 @@ contract("Lottery", async accounts => {
         let instance = await Lottery.deployed();
         const account_one = accounts[0];
         const result = await instance.getLastWinner.call({ from: account_one });
-        let fromBlock = result[0].toNumber();
+        let isWinnerFound = result[0];
+        assert.equal(
+            isWinnerFound,
+            true,
+            "No Winner address found."
+        );
+        let fromBlock = result[1].toNumber();
         const result2 = await instance.getWinnerAtBlock.call(fromBlock , { from: account_one });
         let isFound = result2[0];
         let winnerAtBlock = result2[2];
@@ -85,15 +101,25 @@ contract("Lottery", async accounts => {
         const account_two = accounts[1];
         const account_three = accounts[2];
         const account_four = accounts[3];
-        await instance.start_new_lottery.sendTransaction({ from: account_one });
+        const startDate = new Date();
+        const endDate = new Date();
+        const numberOfDayToAdd = 1;
+        endDate.setDate(endDate.getDate() + numberOfDayToAdd );
+        await instance.start_new_lottery.sendTransaction(startDate.getTime(), endDate.getTime(),{ from: account_one });
         await instance.enter.sendTransaction({from: account_one, value: ENTER_PRICE });
         await instance.enter.sendTransaction({from: account_two, value: ENTER_PRICE });
         await instance.enter.sendTransaction({from: account_three, value: ENTER_PRICE });
         await instance.enter.sendTransaction({from: account_four, value: ENTER_PRICE });
-        await instance.pickWinner.sendTransaction({ from: account_one });
+        await instance.pickWinner.sendTransaction(new Date().getTime(), { from: account_one });
         const result = await instance.getLastWinner.call({ from: account_one });
-        let winner = result[1];
-        let value = web3.utils.fromWei(result[2].toString(), "ether");
+        let isWinnerFound = result[0];
+        assert.equal(
+            isWinnerFound,
+            true,
+            "No Winner address found."
+        );
+        let winner = result[2];
+        let value = web3.utils.fromWei(result[3].toString(), "ether");
         assert.equal(
             winner =! '',
             true,

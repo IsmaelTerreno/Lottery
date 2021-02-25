@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "test": "truffle test"
+    "test": "truffle test --show-events"
   },
   "dependencies": {
     "@chainlink/contracts": "^0.1.4",
