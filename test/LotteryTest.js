@@ -5,7 +5,8 @@ const chance = new Chance();
 
 contract("Lottery", async accounts => {
     const LOTTERY_STATE = { OPEN: 0, CLOSED: 1, CALCULATING_WINNER:2 };
-    const ENTER_PRICE = web3.utils.toWei(APP_CONFIG.ENTER_PRICE_LOTTERY_IN_ETHER, "ether"); 
+    const ENTER_PRICE = web3.utils.toWei(APP_CONFIG.ENTER_PRICE_LOTTERY_IN_ETHER, "ether");
+    const CONTRACT_OWNER = APP_CONFIG.CONTRACT_OWNER; 
 
     it("should start a new lottery", async () => {
         let instance = await Lottery.deployed();
@@ -14,7 +15,7 @@ contract("Lottery", async accounts => {
         const endDate = new Date();
         const numberOfDayToAdd = 1;
         endDate.setDate(endDate.getDate() + numberOfDayToAdd );
-        await instance.start_new_lottery.sendTransaction(startDate.getTime(), endDate.getTime(),{ from: account_one });
+        await instance.start_new_lottery.sendTransaction(startDate.getTime(), endDate.getTime(),{ from: CONTRACT_OWNER });
         status = await instance.getStatus.call({ from: account_one });
         assert.equal(
             status.toNumber(),
@@ -44,7 +45,7 @@ contract("Lottery", async accounts => {
         let instance = await Lottery.deployed();
         const account_one = accounts[0];
         const seed = chance.natural();
-        await instance.pickWinner.sendTransaction(seed, { from: account_one });
+        await instance.pickWinner.sendTransaction(seed, { from: CONTRACT_OWNER });
         const result = await instance.getLastWinner.call({ from: account_one });
         let isWinnerFound = result[0];
         assert.equal(
@@ -108,13 +109,13 @@ contract("Lottery", async accounts => {
         const endDate = new Date();
         const numberOfDayToAdd = 1;
         endDate.setDate(endDate.getDate() + numberOfDayToAdd );
-        await instance.start_new_lottery.sendTransaction(startDate.getTime(), endDate.getTime(),{ from: account_one });
+        await instance.start_new_lottery.sendTransaction(startDate.getTime(), endDate.getTime(),{ from: CONTRACT_OWNER });
         await instance.enter.sendTransaction({from: account_one, value: ENTER_PRICE });
         await instance.enter.sendTransaction({from: account_two, value: ENTER_PRICE });
         await instance.enter.sendTransaction({from: account_three, value: ENTER_PRICE });
         await instance.enter.sendTransaction({from: account_four, value: ENTER_PRICE });
         const seed = chance.natural();
-        await instance.pickWinner.sendTransaction(seed, { from: account_one });
+        await instance.pickWinner.sendTransaction(seed, { from: CONTRACT_OWNER });
         const result = await instance.getLastWinner.call({ from: account_one });
         let isWinnerFound = result[0];
         assert.equal(

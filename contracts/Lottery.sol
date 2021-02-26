@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.6.0 <0.8.0;
 import "@openzeppelin/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract Lottery {
+contract Lottery is Ownable {
     enum LOTTERY_STATE { OPEN, CLOSED, CALCULATING_WINNER }
     LOTTERY_STATE public lottery_state;
     address payable[] public players;
@@ -40,15 +41,16 @@ contract Lottery {
     event DebugPlayer( uint256 resultCount);
     CheckpointWinner[] winnersHistory;
 
-    constructor(address _owner_beneficiary, uint256 enter_price) public {
+    constructor(address _owner_contract, address _owner_beneficiary, uint256 _enter_price) public {
         owner_beneficiary = payable(address(_owner_beneficiary));
         lotteryId = 0;
         lottery_state = LOTTERY_STATE.CLOSED;  
-        ENTER_PRICE = enter_price;
+        ENTER_PRICE = _enter_price;
         percentageLessPriceResult = uint256(20);
+        transferOwnership(_owner_contract);
     }
     
-    function start_new_lottery(uint256 _startDate, uint256 _endDate) external {
+    function start_new_lottery(uint256 _startDate, uint256 _endDate) external onlyOwner {
         require(lottery_state == LOTTERY_STATE.CLOSED, "Can't start a new lottery yet");
         lottery_state = LOTTERY_STATE.OPEN;
         startDate = _startDate;
@@ -69,7 +71,7 @@ contract Lottery {
         }));
     } 
     
-    function pickWinner(uint _saltRandomNumber) external {
+    function pickWinner(uint _saltRandomNumber) external onlyOwner {
         require(lottery_state == LOTTERY_STATE.OPEN, "The lottery hasn't even started!");
         require(lottery_state != LOTTERY_STATE.CALCULATING_WINNER, "Is already calculating the winner.");
         lottery_state = LOTTERY_STATE.CALCULATING_WINNER;

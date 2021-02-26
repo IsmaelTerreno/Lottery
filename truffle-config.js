@@ -1,7 +1,8 @@
 require('dotenv').config();
 
 const APP_CONFIG = {
-    OWNER_BENEFICIARY: process.env.OWNER_BENEFICIARY,
+    CONTRACT_OWNER: process.env.CONTRACT_OWNER,
+    BENEFICIARY_OWNER: process.env.BENEFICIARY_OWNER,
     ENTER_PRICE_LOTTERY_IN_ETHER: process.env.ENTER_PRICE_LOTTERY_IN_ETHER,
 };
 
