@@ -2,8 +2,9 @@
 pragma solidity >=0.6.0 <0.8.0;
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
 
-contract Lottery is Ownable {
+contract Lottery is Ownable, AccessControl {
     enum LOTTERY_STATE { OPEN, CLOSED, CALCULATING_WINNER }
     LOTTERY_STATE public lottery_state;
     address payable[] public players;
@@ -13,7 +14,8 @@ contract Lottery is Ownable {
     uint256 endDate; 
     uint256 public lotteryId;
     uint256 public ENTER_PRICE;
-    uint256 public percentageLessPriceResult; 
+    uint256 public percentageLessPriceResult;
+    bytes32 public constant LOTTERY_ROLE = keccak256("LOTTERY_ROLE");
     using SafeMath for uint256;
 
     struct  CheckpointWinner {
@@ -51,11 +53,24 @@ contract Lottery is Ownable {
     }
     
     function start_new_lottery(uint256 _startDate, uint256 _endDate) external onlyOwner {
+        start_lottery(_startDate, _endDate);       
+    }
+
+    function start_new_lottery_with(uint256 _startDate, uint256 _endDate) external {
+        require(hasRole(LOTTERY_ROLE, msg.sender), "Caller is not a lottery role.");
+        start_lottery(_startDate, _endDate);
+    }
+    
+    function start_lottery(uint256 _startDate, uint256 _endDate) private {
         require(lottery_state == LOTTERY_STATE.CLOSED, "Can't start a new lottery yet");
         lottery_state = LOTTERY_STATE.OPEN;
         startDate = _startDate;
         endDate = _endDate; 
         emit LotteryHasStarted(ENTER_PRICE, startDate, endDate);
+    }
+
+    function add_lottery_worker(address user_with_role_to_add) external onlyOwner {
+        _setupRole(LOTTERY_ROLE, user_with_role_to_add);
     }
 
     function enter() external payable {
@@ -72,6 +87,15 @@ contract Lottery is Ownable {
     } 
     
     function pickWinner(uint _saltRandomNumber) external onlyOwner {
+        pick_winner_action(_saltRandomNumber);
+    }
+
+    function pick_winner_with(uint _saltRandomNumber) external {
+        require(hasRole(LOTTERY_ROLE, msg.sender), "Caller is not a lottery role.");
+        pick_winner_action(_saltRandomNumber);
+    }
+
+    function pick_winner_action(uint _saltRandomNumber) private {
         require(lottery_state == LOTTERY_STATE.OPEN, "The lottery hasn't even started!");
         require(lottery_state != LOTTERY_STATE.CALCULATING_WINNER, "Is already calculating the winner.");
         lottery_state = LOTTERY_STATE.CALCULATING_WINNER;
@@ -138,7 +162,7 @@ contract Lottery is Ownable {
         return lottery_state;
     }
 
-    // TODO: Use Chainlink VRF to generate real random nubers, on this implementation is solydity but needs to go Chainlink VRF some day is just a suggestion.
+    // TODO: In the future could use Chainlink VRF to generate decentralize random numbers, on this implementation is solydity but needs to go Chainlink VRF some day is just a suggestion.
     function getRandomWinner(uint _modulus, uint randNonce) private view returns (uint256) {
         return uint256(keccak256(abi.encodePacked(block.timestamp,  
                                           msg.sender,  

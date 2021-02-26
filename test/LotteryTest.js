@@ -172,4 +172,98 @@ contract("Lottery", async accounts => {
             "Winner value is not correct."
         );
     });
+
+    it("should NOT start a new lottery when you have not the LOTTERY_ROLE role", async () => {
+        let instance = await Lottery.deployed();
+        const account_one = accounts[0];
+        const startDate = new Date();
+        const endDate = new Date();
+        const numberOfDayToAdd = 1;
+        endDate.setDate(endDate.getDate() + numberOfDayToAdd );
+        try {
+            await instance.start_new_lottery_with.sendTransaction(startDate.getTime(), endDate.getTime(),{ from: account_one[9] });
+        } catch (error) {
+            status = await instance.getStatus.call({ from: account_one });
+            assert.equal(
+                status.toNumber() == LOTTERY_STATE.CLOSED,
+                true,
+                "Lottery must not be open when you have not the LOTTERY_ROLE role."
+            );
+        }  
+    });
+
+    it("should start a new lottery when you have the LOTTERY_ROLE role", async () => {
+        let instance = await Lottery.deployed();
+        const account_one = accounts[0];
+        const account_ten = accounts[9];
+        const startDate = new Date();
+        const endDate = new Date();
+        const numberOfDayToAdd = 1;
+        endDate.setDate(endDate.getDate() + numberOfDayToAdd );
+        await instance.add_lottery_worker.sendTransaction(account_ten,{ from: CONTRACT_OWNER });
+        try {
+            await instance.start_new_lottery_with.sendTransaction(startDate.getTime(), endDate.getTime(),{ from: account_ten });
+        } catch (error) {
+            status = await instance.getStatus.call({ from: account_one });
+            assert.equal(
+                status.toNumber() == LOTTERY_STATE.CLOSED,
+                true,
+                "Lottery must not be open when you have NOT the LOTTERY_ROLE role."
+            );
+        }
+        status = await instance.getStatus.call({ from: account_one });
+        assert.equal(
+            status.toNumber() == LOTTERY_STATE.OPEN,
+            true,
+            "Lottery must start and be open when you have the LOTTERY_ROLE role."
+        );  
+    });
+
+    it(`should pick NOT the winner and deliver EHT when you have NOT the LOTTERY_ROLE role`, async () => {
+        let instance = await Lottery.deployed();
+        const account_one = accounts[0];
+        const account_two = accounts[1];
+        const account_three = accounts[2];
+        const account_four = accounts[3];
+        const startDate = new Date();
+        const endDate = new Date();
+        const numberOfDayToAdd = 1;
+        endDate.setDate(endDate.getDate() + numberOfDayToAdd );
+        await instance.enter.sendTransaction({from: account_one, value: ENTER_PRICE });
+        await instance.enter.sendTransaction({from: account_two, value: ENTER_PRICE });
+        await instance.enter.sendTransaction({from: account_three, value: ENTER_PRICE });
+        await instance.enter.sendTransaction({from: account_four, value: ENTER_PRICE });
+        const seed = chance.natural();
+        try {
+            await instance.pick_winner_with.sendTransaction(seed, { from: account_one[9]});    
+        } catch (error) {
+            status = await instance.getStatus.call({ from: account_one });
+            assert.equal(
+                status.toNumber() != LOTTERY_STATE.CALCULATING_WINNER,
+                true,
+                "Lottery must not be calculating the winner when you are not the contract owner"
+            );
+        }
+    });
+
+    it(`should pick the winner and deliver EHT to the winner account when you have the LOTTERY_ROLE role`, async () => {
+        let instance = await Lottery.deployed();
+        const account_one = accounts[0];
+        const account_ten = accounts[9];
+        await instance.add_lottery_worker.sendTransaction(account_ten,{ from: CONTRACT_OWNER });
+        const seed = chance.natural();
+        await instance.pick_winner_with.sendTransaction(seed, { from: account_ten });
+        status = await instance.getStatus.call({ from: account_one });
+        assert.equal(
+            status.toNumber() != LOTTERY_STATE.CALCULATING_WINNER,
+            true,
+            "Lottery must not be calculating the winner when you are not the contract owner"
+        );
+        assert.equal(
+            status.toNumber() == LOTTERY_STATE.CLOSED,
+            true,
+            "Lottery must be closed."
+        );
+        
+    });
 });
