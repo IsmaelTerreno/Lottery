@@ -5,6 +5,7 @@
   "dependencies": {
     "@chainlink/contracts": "^0.1.4",
     "@openzeppelin/contracts": "3.4.0",
+    "chance": "1.1.7",
     "dotenv": "8.2.0",
     "truffle-hdwallet-provider": "^1.0.6"
   }

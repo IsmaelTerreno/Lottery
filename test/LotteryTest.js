@@ -1,5 +1,7 @@
 const Lottery = artifacts.require("Lottery");
 const { APP_CONFIG } = require("../truffle-config");
+const Chance = require('chance');
+const chance = new Chance();
 
 contract("Lottery", async accounts => {
     const LOTTERY_STATE = { OPEN: 0, CLOSED: 1, CALCULATING_WINNER:2 };
@@ -41,7 +43,8 @@ contract("Lottery", async accounts => {
     it(`should pick the winner and deliver EHT to the winner account`, async () => {
         let instance = await Lottery.deployed();
         const account_one = accounts[0];
-        await instance.pickWinner.sendTransaction(new Date().getTime() ,{ from: account_one });
+        const seed = chance.natural();
+        await instance.pickWinner.sendTransaction(seed, { from: account_one });
         const result = await instance.getLastWinner.call({ from: account_one });
         let isWinnerFound = result[0];
         assert.equal(
@@ -110,7 +113,8 @@ contract("Lottery", async accounts => {
         await instance.enter.sendTransaction({from: account_two, value: ENTER_PRICE });
         await instance.enter.sendTransaction({from: account_three, value: ENTER_PRICE });
         await instance.enter.sendTransaction({from: account_four, value: ENTER_PRICE });
-        await instance.pickWinner.sendTransaction(new Date().getTime(), { from: account_one });
+        const seed = chance.natural();
+        await instance.pickWinner.sendTransaction(seed, { from: account_one });
         const result = await instance.getLastWinner.call({ from: account_one });
         let isWinnerFound = result[0];
         assert.equal(
