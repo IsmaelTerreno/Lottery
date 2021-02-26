@@ -8,6 +8,25 @@ contract("Lottery", async accounts => {
     const ENTER_PRICE = web3.utils.toWei(APP_CONFIG.ENTER_PRICE_LOTTERY_IN_ETHER, "ether");
     const CONTRACT_OWNER = APP_CONFIG.CONTRACT_OWNER; 
 
+    it("should NOT start a new lottery when you are not the contract owner", async () => {
+        let instance = await Lottery.deployed();
+        const account_one = accounts[0];
+        const startDate = new Date();
+        const endDate = new Date();
+        const numberOfDayToAdd = 1;
+        endDate.setDate(endDate.getDate() + numberOfDayToAdd );
+        try {
+            await instance.start_new_lottery.sendTransaction(startDate.getTime(), endDate.getTime(),{ from: account_one[9] });
+        } catch (error) {
+            status = await instance.getStatus.call({ from: account_one });
+            assert.equal(
+                status.toNumber() == LOTTERY_STATE.CLOSED,
+                true,
+                "Lottery must not be open when you are not the owner."
+            );
+        }  
+    });
+
     it("should start a new lottery", async () => {
         let instance = await Lottery.deployed();
         const account_one = accounts[0];
@@ -18,8 +37,8 @@ contract("Lottery", async accounts => {
         await instance.start_new_lottery.sendTransaction(startDate.getTime(), endDate.getTime(),{ from: CONTRACT_OWNER });
         status = await instance.getStatus.call({ from: account_one });
         assert.equal(
-            status.toNumber(),
-            LOTTERY_STATE.OPEN,
+            status.toNumber() == LOTTERY_STATE.OPEN,
+            true,
             "Lottery is not open"
         );
     });
@@ -39,6 +58,23 @@ contract("Lottery", async accounts => {
             true,
             "Balance is not correct."
         );
+    });
+
+    it(`should pick NOT the winner and deliver EHT when you are not the contract owner`, async () => {
+        let instance = await Lottery.deployed();
+        const account_one = accounts[0];
+        const seed = chance.natural();
+        try {
+            await instance.pickWinner.sendTransaction(seed, { from: account_one[9]});    
+        } catch (error) {
+            status = await instance.getStatus.call({ from: account_one });
+            assert.equal(
+                status.toNumber() != LOTTERY_STATE.CALCULATING_WINNER,
+                true,
+                "Lottery must not be calculating the winner when you are not the contract owner"
+            );
+        }
+        
     });
 
     it(`should pick the winner and deliver EHT to the winner account`, async () => {
