@@ -225,10 +225,6 @@ contract("Lottery", async accounts => {
         const account_two = accounts[1];
         const account_three = accounts[2];
         const account_four = accounts[3];
-        const startDate = new Date();
-        const endDate = new Date();
-        const numberOfDayToAdd = 1;
-        endDate.setDate(endDate.getDate() + numberOfDayToAdd );
         await instance.enter.sendTransaction({from: account_one, value: ENTER_PRICE });
         await instance.enter.sendTransaction({from: account_two, value: ENTER_PRICE });
         await instance.enter.sendTransaction({from: account_three, value: ENTER_PRICE });
@@ -264,6 +260,36 @@ contract("Lottery", async accounts => {
             true,
             "Lottery must be closed."
         );
-        
+    });
+
+    it(`should get the last 40 lottery winners`, async () => {
+        let instance = await Lottery.deployed();
+        const account_one = accounts[0];
+        const account_two = accounts[1];
+        const account_three = accounts[2];
+        const account_four = accounts[3];
+        const runLotteryPlays = async () =>{
+            const startDate = new Date();
+            const endDate = new Date();
+            const numberOfDayToAdd = 1;
+            endDate.setDate(endDate.getDate() + numberOfDayToAdd );
+            await instance.start_new_lottery.sendTransaction(startDate.getTime(), endDate.getTime(),{ from: CONTRACT_OWNER });
+            await instance.enter.sendTransaction({from: account_one, value: ENTER_PRICE });
+            await instance.enter.sendTransaction({from: account_two, value: ENTER_PRICE });
+            await instance.enter.sendTransaction({from: account_three, value: ENTER_PRICE });
+            await instance.enter.sendTransaction({from: account_four, value: ENTER_PRICE });
+            const seed = chance.natural();
+            await instance.pickWinner.sendTransaction(seed, { from: CONTRACT_OWNER });
+        };
+        const replayLotteryTimes = 40;
+        for (let i = 0; i <= replayLotteryTimes; i++) {
+            await runLotteryPlays();
+        }
+        const winners = await instance.getLast40Winners.call({ from: account_one });
+        assert.equal(
+            winners[0].length > 0,
+            true,
+            "Must return at least 1 result."
+        );
     });
 });

@@ -40,8 +40,8 @@ contract Lottery is Ownable, AccessControl {
     event LotteryHasStarted(uint256 enter_price, uint256 startDate, uint256 endDate);
     event WinnerSelectedInDate(address winner, uint256 amount, uint256 startDate, uint256 endDate);
     event PlayersFoundInRangeDate( uint256 resultCount, uint256 _startDate,  uint256 _endDate);
-    event DebugPlayer( uint256 resultCount);
-    CheckpointWinner[] winnersHistory;
+    event DebugValue( uint256 resultCount );
+    CheckpointWinner[] public winnersHistory;
 
     constructor(address _owner_contract, address _owner_beneficiary, uint256 _enter_price) public {
         owner_beneficiary = payable(address(_owner_beneficiary));
@@ -117,6 +117,37 @@ contract Lottery is Ownable, AccessControl {
             return (true, winner.fromBlock, winner.winner, winner.value);
         }
         return(false, uint128(0), address(0),uint256(0));
+    }
+    function debugValue(uint256 valueDebug) private {
+        emit DebugValue(valueDebug);
+    }
+
+    function getLast40Winners() external view returns( 
+        uint256 [] memory,
+        uint256 [] memory,
+        uint256 [] memory,
+        uint128 [] memory,
+        address [] memory
+        ){
+        uint limit = 40;
+        uint256 [] memory value_r = new uint256[](limit);
+        uint256 [] memory startDate_r = new uint256[](limit);
+        uint256 [] memory endDate_r = new uint256[](limit); 
+        uint128 [] memory fromBlock_r = new uint128[](limit);
+        address [] memory winner_r = new address[](limit);
+        
+        if(winnersHistory.length > 0){
+            uint j = 0;
+            for(uint i = winnersHistory.length - 1; (i >= 0 && i < winnersHistory.length) && (j < limit ); i--) {
+                value_r[j] = winnersHistory[i].value;
+                startDate_r[j] = winnersHistory[i].startDate;
+                endDate_r[j] = winnersHistory[i].endDate;
+                fromBlock_r[j] = winnersHistory[i].fromBlock;
+                winner_r[j] = winnersHistory[i].winner;
+                j++;
+            }
+        }
+        return (value_r, startDate_r, endDate_r, fromBlock_r, winner_r);
     }
 
     function getWinnerAtBlock(uint128 _fromBlock) external view returns(bool,uint128, address, uint256){
