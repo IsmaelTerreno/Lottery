@@ -203,7 +203,7 @@ contract Lottery is Ownable, AccessControl {
     function updateWinnerHistory(address _address, uint256 _amount) private {
         winnersHistory.push(CheckpointWinner(
             {
-                fromBlock: uint128(block.number - 1),
+                fromBlock: uint128(block.number),
                 value: _amount,
                 winner: _address,
                 startDate: startDate,

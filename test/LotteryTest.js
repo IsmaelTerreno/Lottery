@@ -8,7 +8,7 @@ contract("Lottery", async accounts => {
     const ENTER_PRICE = web3.utils.toWei(APP_CONFIG.ENTER_PRICE_LOTTERY_IN_ETHER, "ether");
     const CONTRACT_OWNER = APP_CONFIG.CONTRACT_OWNER; 
 
-    xit("should NOT start a new lottery when you are not the contract owner", async () => {
+    it("should NOT start a new lottery when you are not the contract owner", async () => {
         let instance = await Lottery.deployed();
         const account_one = accounts[0];
         const startDate = new Date();
@@ -27,7 +27,7 @@ contract("Lottery", async accounts => {
         }  
     });
 
-    xit("should start a new lottery", async () => {
+    it("should start a new lottery", async () => {
         let instance = await Lottery.deployed();
         const account_one = accounts[0];
         const startDate = new Date();
@@ -43,7 +43,7 @@ contract("Lottery", async accounts => {
         );
     });
 
-    xit("should store sent value in the contract for a new lotery", async () => {
+    it("should store sent value in the contract for a new lotery", async () => {
         let instance = await Lottery.deployed();
         const account_one = accounts[0];
         const account_two = accounts[1];
@@ -60,7 +60,7 @@ contract("Lottery", async accounts => {
         );
     });
 
-    xit(`should pick NOT the winner and deliver EHT when you are not the contract owner`, async () => {
+    it(`should pick NOT the winner and deliver EHT when you are not the contract owner`, async () => {
         let instance = await Lottery.deployed();
         const account_one = accounts[0];
         const seed = chance.natural();
@@ -77,7 +77,7 @@ contract("Lottery", async accounts => {
         
     });
 
-    xit(`should pick the winner and deliver EHT to the winner account`, async () => {
+    it(`should pick the winner and deliver EHT to the winner account`, async () => {
         let instance = await Lottery.deployed();
         const account_one = accounts[0];
         const seed = chance.natural();
@@ -103,7 +103,7 @@ contract("Lottery", async accounts => {
         );
     });
 
-    xit(`should pick the winner at one particular block in history`, async () => {
+    it(`should pick the winner at one particular block in history`, async () => {
         let instance = await Lottery.deployed();
         const account_one = accounts[0];
         const result = await instance.getLastWinner.call({ from: account_one });
@@ -135,7 +135,7 @@ contract("Lottery", async accounts => {
         );
     });
 
-    xit(`should put ${ENTER_PRICE} Wei in the lotery and deliver to the winner account with 4 accounts`, async () => {
+    it(`should put ${ENTER_PRICE} Wei in the lotery and deliver to the winner account with 4 accounts`, async () => {
         let instance = await Lottery.deployed();
         const account_one = accounts[0];
         const account_two = accounts[1];
@@ -173,7 +173,7 @@ contract("Lottery", async accounts => {
         );
     });
 
-    xit("should NOT start a new lottery when you have not the LOTTERY_ROLE role", async () => {
+    it("should NOT start a new lottery when you have not the LOTTERY_ROLE role", async () => {
         let instance = await Lottery.deployed();
         const account_one = accounts[0];
         const startDate = new Date();
@@ -192,7 +192,7 @@ contract("Lottery", async accounts => {
         }  
     });
 
-    xit("should start a new lottery when you have the LOTTERY_ROLE role", async () => {
+    it("should start a new lottery when you have the LOTTERY_ROLE role", async () => {
         let instance = await Lottery.deployed();
         const account_one = accounts[0];
         const account_ten = accounts[9];
@@ -219,7 +219,7 @@ contract("Lottery", async accounts => {
         );  
     });
 
-    xit(`should pick NOT the winner and deliver EHT when you have NOT the LOTTERY_ROLE role`, async () => {
+    it(`should pick NOT the winner and deliver EHT when you have NOT the LOTTERY_ROLE role`, async () => {
         let instance = await Lottery.deployed();
         const account_one = accounts[0];
         const account_two = accounts[1];
@@ -242,7 +242,7 @@ contract("Lottery", async accounts => {
         }
     });
 
-    xit(`should pick the winner and deliver EHT to the winner account when you have the LOTTERY_ROLE role`, async () => {
+    it(`should pick the winner and deliver EHT to the winner account when you have the LOTTERY_ROLE role`, async () => {
         let instance = await Lottery.deployed();
         const account_one = accounts[0];
         const account_ten = accounts[9];
@@ -262,7 +262,7 @@ contract("Lottery", async accounts => {
         );
     });
 
-    xit(`should get the last 40 lottery winners`, async () => {
+    it(`should get the last 40 lottery winners`, async () => {
         let instance = await Lottery.deployed();
         const account_one = accounts[0];
         const account_two = accounts[1];
