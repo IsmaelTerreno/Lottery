@@ -6,16 +6,16 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 
 contract Lottery is Ownable, AccessControl {
     enum LOTTERY_STATE { OPEN, CLOSED, CALCULATING_WINNER }
-    LOTTERY_STATE public lottery_state;
-    address payable[] public players;
-    CheckpointLotteryPlayer[] public lotery_players;
+    LOTTERY_STATE private lottery_state;
+    address payable[] private players;
+    CheckpointLotteryPlayer[] private lotery_players;
     address payable private owner_beneficiary;
-    uint256 startDate;
-    uint256 endDate; 
-    uint256 public lotteryId;
-    uint256 public ENTER_PRICE;
-    uint256 public percentageLessPriceResult;
-    bytes32 public constant LOTTERY_ROLE = keccak256("LOTTERY_ROLE");
+    uint256 private startDate;
+    uint256 private endDate; 
+    uint256 private lotteryId;
+    uint256 private ENTER_PRICE;
+    uint256 private percentageLessPriceResult;
+    bytes32 private constant LOTTERY_ROLE = keccak256("LOTTERY_ROLE");
     using SafeMath for uint256;
 
     struct  CheckpointWinner {
@@ -41,7 +41,7 @@ contract Lottery is Ownable, AccessControl {
     event WinnerSelectedInDate(address winner, uint256 amount, uint256 startDate, uint256 endDate);
     event PlayersFoundInRangeDate( uint256 resultCount, uint256 _startDate,  uint256 _endDate);
     event DebugValue( uint256 resultCount );
-    CheckpointWinner[] public winnersHistory;
+    CheckpointWinner[] private winnersHistory;
 
     constructor(address _owner_contract, address _owner_beneficiary, uint256 _enter_price) public {
         owner_beneficiary = payable(address(_owner_beneficiary));
@@ -224,6 +224,42 @@ contract Lottery is Ownable, AccessControl {
 
     function getBalance() private view returns (uint256){
         return address(this).balance;
+    }
+
+    function getLotteryInfo() public view returns (uint256, uint256, uint256, uint256, uint256){    
+        return (
+            uint256(lottery_state),
+            startDate,
+            endDate,
+            ENTER_PRICE,
+            address(this).balance
+        );  
+    }
+
+    function getPositionsFromToDateCount( address _address, uint256 _startDate, uint256 _endDate) private returns(uint256){
+        uint256 resultCount = 0;
+        for(uint i = 0; i < lotery_players.length; i++){
+            if(
+                lotery_players[i].startDate >= _startDate && 
+                lotery_players[i].endDate <= _endDate &&
+                lotery_players[i].player == _address
+            ){
+                resultCount++;
+            }
+        }
+        emit PlayersFoundInRangeDate( resultCount, _startDate,  _endDate);
+        return resultCount;
+    }
+
+    function countCurrentAddressLotteryPositions() public returns (uint256){
+        return getPositionsFromToDateCount( msg.sender,  startDate, endDate );
+    }
+
+    function countAllCurrentLotteryPositions() public returns (uint256) {
+        return getPlayersFromToDateCount(
+            startDate, 
+            endDate 
+        );
     }
 
 }
