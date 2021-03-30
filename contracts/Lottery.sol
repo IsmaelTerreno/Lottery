@@ -34,6 +34,7 @@ contract Lottery is Ownable, AccessControl {
         uint128 fromBlock;
         address player;
     }
+    event NewPlayerTickectAdded(uint128 fromBlock, address owner, uint amount);
     event NewWinnerAdded(uint128 fromBlock, address owner, uint amount);
     event LotteryHasEnded(uint256 endDate);
     event CalculatingWinner( uint256 startDate, uint256 endDate);
@@ -84,6 +85,7 @@ contract Lottery is Ownable, AccessControl {
             startDate: startDate,
             endDate: endDate
         }));
+        emit NewPlayerTickectAdded(uint128(block.number), msg.sender, uint256(msg.value));
     } 
     
     function pickWinner(uint _saltRandomNumber) external onlyOwner {
