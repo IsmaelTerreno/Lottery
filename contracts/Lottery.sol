@@ -253,8 +253,59 @@ contract Lottery is Ownable, AccessControl {
         return resultCount;
     }
 
+    function getPositionsFromToDate( address _address, uint256 _startDate, uint256 _endDate ) private returns( 
+        uint256 [] memory,
+        uint256 [] memory,
+        uint256 [] memory,
+        uint128 [] memory,
+        address [] memory
+        ){
+        uint limit = getPositionsFromToDateCount(
+            msg.sender,
+            _startDate, 
+            _endDate 
+        );
+        uint256 [] memory value_r = new uint256[](limit);
+        uint256 [] memory startDate_r = new uint256[](limit);
+        uint256 [] memory endDate_r = new uint256[](limit); 
+        uint128 [] memory fromBlock_r = new uint128[](limit);
+        address [] memory player_r = new address[](limit);
+        if(limit > 0){
+            uint j = 0;
+            for(
+                uint i = lotery_players.length - 1; 
+                (i >= 0 && i < lotery_players.length) && (j < limit ); 
+                i--
+            ) {
+                if(
+                lotery_players[i].startDate >= _startDate && 
+                lotery_players[i].endDate <= _endDate &&
+                lotery_players[i].player == _address
+                ){
+                    value_r[j] = lotery_players[i].value;
+                    startDate_r[j] = lotery_players[i].startDate;
+                    endDate_r[j] = lotery_players[i].endDate;
+                    fromBlock_r[j] = lotery_players[i].fromBlock;
+                    player_r[j] = lotery_players[i].player;
+                    j++;
+                }
+            }
+        }
+        return (value_r, startDate_r, endDate_r, fromBlock_r, player_r);
+    }
+
     function countCurrentAddressLotteryPositions() public returns (uint256){
         return getPositionsFromToDateCount( msg.sender,  startDate, endDate );
+    }
+
+    function getCurrentAddressLotteryPositions() public returns( 
+        uint256 [] memory,
+        uint256 [] memory,
+        uint256 [] memory,
+        uint128 [] memory,
+        address [] memory
+        ){
+        return getPositionsFromToDate( msg.sender,  startDate, endDate );
     }
 
     function countAllCurrentLotteryPositions() public returns (uint256) {

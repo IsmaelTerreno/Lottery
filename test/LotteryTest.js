@@ -335,7 +335,7 @@ contract("Lottery", async accounts => {
         );
     });
 
-    it("should get the general info from Lottery ", async () => {
+    it("should get the count of all current player positions in the current Lottery", async () => {
         let instance = await Lottery.deployed();
         const account_one = accounts[0];
         const account_two = accounts[1];
@@ -354,7 +354,7 @@ contract("Lottery", async accounts => {
         );
     });
 
-    it("should get the general info from Lottery ", async () => {
+    it("should get the count of all player positions of the current address in the current Lottery", async () => {
         let instance = await Lottery.deployed();
         const account_one = accounts[0];
         await instance.enter.sendTransaction({from: account_one, value: ENTER_PRICE });
