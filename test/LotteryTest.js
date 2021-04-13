@@ -8,7 +8,7 @@ contract("Lottery", async accounts => {
     const ENTER_PRICE = web3.utils.toWei(APP_CONFIG.ENTER_PRICE_LOTTERY_IN_ETHER, "ether");
     const CONTRACT_OWNER = APP_CONFIG.CONTRACT_OWNER; 
 
-    it("should NOT start a new lottery when you are not the contract owner", async () => {
+    xit("should NOT start a new lottery when you are not the contract owner", async () => {
         let instance = await Lottery.deployed();
         const account_one = accounts[0];
         const startDate = new Date();
@@ -27,7 +27,7 @@ contract("Lottery", async accounts => {
         }  
     });
 
-    it("should start a new lottery", async () => {
+    xit("should start a new lottery", async () => {
         let instance = await Lottery.deployed();
         const account_one = accounts[0];
         const startDate = new Date();
@@ -43,7 +43,7 @@ contract("Lottery", async accounts => {
         );
     });
 
-    it("should store sent value in the contract for a new lotery", async () => {
+    xit("should store sent value in the contract for a new lotery", async () => {
         let instance = await Lottery.deployed();
         const account_one = accounts[0];
         const account_two = accounts[1];
@@ -60,7 +60,7 @@ contract("Lottery", async accounts => {
         );
     });
 
-    it(`should pick NOT the winner and deliver EHT when you are not the contract owner`, async () => {
+    xit(`should pick NOT the winner and deliver EHT when you are not the contract owner`, async () => {
         let instance = await Lottery.deployed();
         const account_one = accounts[0];
         const seed = chance.natural();
@@ -77,7 +77,7 @@ contract("Lottery", async accounts => {
         
     });
 
-    it(`should pick the winner and deliver EHT to the winner account`, async () => {
+    xit(`should pick the winner and deliver EHT to the winner account`, async () => {
         let instance = await Lottery.deployed();
         const account_one = accounts[0];
         const seed = chance.natural();
@@ -103,7 +103,7 @@ contract("Lottery", async accounts => {
         );
     });
 
-    it(`should pick the winner at one particular block in history`, async () => {
+    xit(`should pick the winner at one particular block in history`, async () => {
         let instance = await Lottery.deployed();
         const account_one = accounts[0];
         const result = await instance.getLastWinner.call({ from: account_one });
@@ -116,7 +116,6 @@ contract("Lottery", async accounts => {
         let fromBlock = result[1].toNumber();
         const result2 = await instance.getWinnerAtBlock.call(fromBlock , { from: account_one });
         let isFound = result2[0];
-        let winnerAtBlock = result2[2];
         let valueAtBlock = web3.utils.fromWei(result2[3].toString(), "ether");
         assert.equal(
             isFound,
@@ -135,7 +134,7 @@ contract("Lottery", async accounts => {
         );
     });
 
-    it(`should put ${ENTER_PRICE} Wei in the lotery and deliver to the winner account with 4 accounts`, async () => {
+    xit(`should put ${ENTER_PRICE} Wei in the lotery and deliver to the winner account with 4 accounts`, async () => {
         let instance = await Lottery.deployed();
         const account_one = accounts[0];
         const account_two = accounts[1];
@@ -173,7 +172,7 @@ contract("Lottery", async accounts => {
         );
     });
 
-    it("should NOT start a new lottery when you have not the LOTTERY_ROLE role", async () => {
+    xit("should NOT start a new lottery when you have not the LOTTERY_ROLE role", async () => {
         let instance = await Lottery.deployed();
         const account_one = accounts[0];
         const startDate = new Date();
@@ -192,7 +191,7 @@ contract("Lottery", async accounts => {
         }  
     });
 
-    it("should start a new lottery when you have the LOTTERY_ROLE role", async () => {
+    xit("should start a new lottery when you have the LOTTERY_ROLE role", async () => {
         let instance = await Lottery.deployed();
         const account_one = accounts[0];
         const account_ten = accounts[9];
@@ -219,7 +218,7 @@ contract("Lottery", async accounts => {
         );  
     });
 
-    it(`should pick NOT the winner and deliver EHT when you have NOT the LOTTERY_ROLE role`, async () => {
+    xit(`should pick NOT the winner and deliver EHT when you have NOT the LOTTERY_ROLE role`, async () => {
         let instance = await Lottery.deployed();
         const account_one = accounts[0];
         const account_two = accounts[1];
@@ -242,7 +241,7 @@ contract("Lottery", async accounts => {
         }
     });
 
-    it(`should pick the winner and deliver EHT to the winner account when you have the LOTTERY_ROLE role`, async () => {
+    xit(`should pick the winner and deliver EHT to the winner account when you have the LOTTERY_ROLE role`, async () => {
         let instance = await Lottery.deployed();
         const account_one = accounts[0];
         const account_ten = accounts[9];
@@ -262,7 +261,7 @@ contract("Lottery", async accounts => {
         );
     });
 
-    it(`should get the last 40 lottery winners`, async () => {
+    xit(`should get the last 40 lottery winners`, async () => {
         let instance = await Lottery.deployed();
         const account_one = accounts[0];
         const account_two = accounts[1];
@@ -362,6 +361,19 @@ contract("Lottery", async accounts => {
         const countPositions = result.toNumber();
         assert.equal(
             countPositions === 3,
+            true,
+            "Lottery count for current positions is not correct"
+        );
+    });
+
+    it("should get all player positions of the current address in the current Lottery", async () => {
+        let instance = await Lottery.deployed();
+        const account_one = accounts[0];
+        await instance.enter.sendTransaction({from: account_one, value: ENTER_PRICE });
+        result = await instance.getCurrentAddressLotteryPositions.call({ from: account_one });
+        const countPositions = result[0].length;
+        assert.equal(
+            countPositions === 4,
             true,
             "Lottery count for current positions is not correct"
         );

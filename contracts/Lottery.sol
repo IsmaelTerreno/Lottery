@@ -120,9 +120,6 @@ contract Lottery is Ownable, AccessControl {
         }
         return(false, uint128(0), address(0),uint256(0));
     }
-    function debugValue(uint256 valueDebug) private {
-        emit DebugValue(valueDebug);
-    }
 
     function getLast40Winners() external view returns( 
         uint256 [] memory,
@@ -253,7 +250,7 @@ contract Lottery is Ownable, AccessControl {
         return resultCount;
     }
 
-    function getPositionsFromToDate( address _address, uint256 _startDate, uint256 _endDate ) private returns( 
+    function getPositionsFromToDate( address _address, uint256 _startDate, uint256 _endDate ) public returns( 
         uint256 [] memory,
         uint256 [] memory,
         uint256 [] memory,
@@ -265,6 +262,7 @@ contract Lottery is Ownable, AccessControl {
             _startDate, 
             _endDate 
         );
+        require(limit < 301, "Limit of 300 results reached. Please select another date to reduce the result.");
         uint256 [] memory value_r = new uint256[](limit);
         uint256 [] memory startDate_r = new uint256[](limit);
         uint256 [] memory endDate_r = new uint256[](limit); 
