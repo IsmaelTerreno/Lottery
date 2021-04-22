@@ -375,7 +375,7 @@ contract("Lottery", async accounts => {
         assert.equal(
             countPositions === 4,
             true,
-            "Lottery count for current positions is not correct"
+            "Lottery current positions is not correct"
         );
     });
 });
