@@ -8,7 +8,7 @@ contract("Lottery", async accounts => {
     const ENTER_PRICE = web3.utils.toWei(APP_CONFIG.ENTER_PRICE_LOTTERY_IN_ETHER, "ether");
     const CONTRACT_OWNER = APP_CONFIG.CONTRACT_OWNER; 
 
-    xit("should NOT start a new lottery when you are not the contract owner", async () => {
+    it("should NOT start a new lottery when you are not the contract owner", async () => {
         let instance = await Lottery.deployed();
         const account_one = accounts[0];
         const startDate = new Date();
@@ -20,14 +20,14 @@ contract("Lottery", async accounts => {
         } catch (error) {
             status = await instance.getStatus.call({ from: account_one });
             assert.equal(
-                status.toNumber() == LOTTERY_STATE.CLOSED,
+                status.toNumber() === LOTTERY_STATE.CLOSED,
                 true,
                 "Lottery must not be open when you are not the owner."
             );
         }  
     });
 
-    xit("should start a new lottery", async () => {
+    it("should start a new lottery", async () => {
         let instance = await Lottery.deployed();
         const account_one = accounts[0];
         const startDate = new Date();
@@ -37,13 +37,13 @@ contract("Lottery", async accounts => {
         await instance.start_new_lottery.sendTransaction(startDate.getTime(), endDate.getTime(),{ from: CONTRACT_OWNER });
         status = await instance.getStatus.call({ from: account_one });
         assert.equal(
-            status.toNumber() == LOTTERY_STATE.OPEN,
+            status.toNumber() === LOTTERY_STATE.OPEN,
             true,
             "Lottery is not open"
         );
     });
 
-    xit("should store sent value in the contract for a new lotery", async () => {
+    it("should store sent value in the contract for a new lottery", async () => {
         let instance = await Lottery.deployed();
         const account_one = accounts[0];
         const account_two = accounts[1];
@@ -60,7 +60,7 @@ contract("Lottery", async accounts => {
         );
     });
 
-    xit(`should pick NOT the winner and deliver EHT when you are not the contract owner`, async () => {
+    it(`should pick NOT the winner and deliver EHT when you are not the contract owner`, async () => {
         let instance = await Lottery.deployed();
         const account_one = accounts[0];
         const seed = chance.natural();
@@ -69,7 +69,7 @@ contract("Lottery", async accounts => {
         } catch (error) {
             status = await instance.getStatus.call({ from: account_one });
             assert.equal(
-                status.toNumber() != LOTTERY_STATE.CALCULATING_WINNER,
+                status.toNumber() !== LOTTERY_STATE.CALCULATING_WINNER,
                 true,
                 "Lottery must not be calculating the winner when you are not the contract owner"
             );
@@ -77,7 +77,7 @@ contract("Lottery", async accounts => {
         
     });
 
-    xit(`should pick the winner and deliver EHT to the winner account`, async () => {
+    it(`should pick the winner and deliver EHT to the winner account`, async () => {
         let instance = await Lottery.deployed();
         const account_one = accounts[0];
         const seed = chance.natural();
@@ -103,7 +103,7 @@ contract("Lottery", async accounts => {
         );
     });
 
-    xit(`should pick the winner at one particular block in history`, async () => {
+    it(`should pick the winner at one particular block in history`, async () => {
         let instance = await Lottery.deployed();
         const account_one = accounts[0];
         const result = await instance.getLastWinner.call({ from: account_one });
@@ -134,7 +134,7 @@ contract("Lottery", async accounts => {
         );
     });
 
-    xit(`should put ${ENTER_PRICE} Wei in the lotery and deliver to the winner account with 4 accounts`, async () => {
+    it(`should put ${ENTER_PRICE} Wei in the lottery and deliver to the winner account with 4 accounts`, async () => {
         let instance = await Lottery.deployed();
         const account_one = accounts[0];
         const account_two = accounts[1];
@@ -172,7 +172,7 @@ contract("Lottery", async accounts => {
         );
     });
 
-    xit("should NOT start a new lottery when you have not the LOTTERY_ROLE role", async () => {
+    it("should NOT start a new lottery when you have not the LOTTERY_ROLE role", async () => {
         let instance = await Lottery.deployed();
         const account_one = accounts[0];
         const startDate = new Date();
@@ -184,14 +184,14 @@ contract("Lottery", async accounts => {
         } catch (error) {
             status = await instance.getStatus.call({ from: account_one });
             assert.equal(
-                status.toNumber() == LOTTERY_STATE.CLOSED,
+                status.toNumber() === LOTTERY_STATE.CLOSED,
                 true,
                 "Lottery must not be open when you have not the LOTTERY_ROLE role."
             );
         }  
     });
 
-    xit("should start a new lottery when you have the LOTTERY_ROLE role", async () => {
+    it("should start a new lottery when you have the LOTTERY_ROLE role", async () => {
         let instance = await Lottery.deployed();
         const account_one = accounts[0];
         const account_ten = accounts[9];
@@ -205,20 +205,20 @@ contract("Lottery", async accounts => {
         } catch (error) {
             status = await instance.getStatus.call({ from: account_one });
             assert.equal(
-                status.toNumber() == LOTTERY_STATE.CLOSED,
+                status.toNumber() === LOTTERY_STATE.CLOSED,
                 true,
                 "Lottery must not be open when you have NOT the LOTTERY_ROLE role."
             );
         }
         status = await instance.getStatus.call({ from: account_one });
         assert.equal(
-            status.toNumber() == LOTTERY_STATE.OPEN,
+            status.toNumber() === LOTTERY_STATE.OPEN,
             true,
             "Lottery must start and be open when you have the LOTTERY_ROLE role."
         );  
     });
 
-    xit(`should pick NOT the winner and deliver EHT when you have NOT the LOTTERY_ROLE role`, async () => {
+    it(`should pick NOT the winner and deliver EHT when you have NOT the LOTTERY_ROLE role`, async () => {
         let instance = await Lottery.deployed();
         const account_one = accounts[0];
         const account_two = accounts[1];
@@ -234,14 +234,14 @@ contract("Lottery", async accounts => {
         } catch (error) {
             status = await instance.getStatus.call({ from: account_one });
             assert.equal(
-                status.toNumber() != LOTTERY_STATE.CALCULATING_WINNER,
+                status.toNumber() !== LOTTERY_STATE.CALCULATING_WINNER,
                 true,
                 "Lottery must not be calculating the winner when you are not the contract owner"
             );
         }
     });
 
-    xit(`should pick the winner and deliver EHT to the winner account when you have the LOTTERY_ROLE role`, async () => {
+    it(`should pick the winner and deliver EHT to the winner account when you have the LOTTERY_ROLE role`, async () => {
         let instance = await Lottery.deployed();
         const account_one = accounts[0];
         const account_ten = accounts[9];
@@ -250,18 +250,18 @@ contract("Lottery", async accounts => {
         await instance.pick_winner_with.sendTransaction(seed, { from: account_ten });
         status = await instance.getStatus.call({ from: account_one });
         assert.equal(
-            status.toNumber() != LOTTERY_STATE.CALCULATING_WINNER,
+            status.toNumber() !== LOTTERY_STATE.CALCULATING_WINNER,
             true,
             "Lottery must not be calculating the winner when you are not the contract owner"
         );
         assert.equal(
-            status.toNumber() == LOTTERY_STATE.CLOSED,
+            status.toNumber() === LOTTERY_STATE.CLOSED,
             true,
             "Lottery must be closed."
         );
     });
 
-    xit(`should get the last 40 lottery winners`, async () => {
+    it(`should get the last 40 lottery winners`, async () => {
         let instance = await Lottery.deployed();
         const account_one = accounts[0];
         const account_two = accounts[1];
@@ -378,4 +378,17 @@ contract("Lottery", async accounts => {
             "Lottery current positions is not correct"
         );
     });
+
+    it("should return if the address is lottery role admin", async () => {
+        let instance = await Lottery.deployed();
+        const account_six = accounts[5];
+        await instance.add_lottery_worker.sendTransaction(account_six,{ from: CONTRACT_OWNER });
+        result = await instance.isLotteryAdmin.call({ from: account_six });
+        assert.equal(
+            result === true,
+            true,
+            "Lottery current positions is not correct"
+        );
+    });
+    
 });

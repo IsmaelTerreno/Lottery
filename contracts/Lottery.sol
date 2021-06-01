@@ -34,7 +34,7 @@ contract Lottery is Ownable, AccessControl {
         uint128 fromBlock;
         address player;
     }
-    event NewPlayerTickectAdded(uint128 fromBlock, address owner, uint amount);
+    event NewPlayerTicketAdded(uint128 fromBlock, address owner, uint amount);
     event NewWinnerAdded(uint128 fromBlock, address owner, uint amount);
     event LotteryHasEnded(uint256 endDate);
     event CalculatingWinner( uint256 startDate, uint256 endDate);
@@ -74,6 +74,10 @@ contract Lottery is Ownable, AccessControl {
         _setupRole(LOTTERY_ROLE, user_with_role_to_add);
     }
 
+    function isLotteryAdmin() external returns (bool) {
+        return hasRole(LOTTERY_ROLE, msg.sender);
+    }
+
     function enter() external payable {
         require(uint256(msg.value) == ENTER_PRICE, "The price to enter is not correct.");
         require(lottery_state == LOTTERY_STATE.OPEN, "The lottery hasn't even started!");
@@ -85,7 +89,7 @@ contract Lottery is Ownable, AccessControl {
             startDate: startDate,
             endDate: endDate
         }));
-        emit NewPlayerTickectAdded(uint128(block.number), msg.sender, uint256(msg.value));
+        emit NewPlayerTicketAdded(uint128(block.number), msg.sender, uint256(msg.value));
     } 
     
     function pickWinner(uint _saltRandomNumber) external onlyOwner {
