@@ -8,7 +8,7 @@ contract Lottery is Ownable, AccessControl {
     enum LOTTERY_STATE { OPEN, CLOSED, CALCULATING_WINNER }
     LOTTERY_STATE private lottery_state;
     address payable[] private players;
-    CheckpointLotteryPlayer[] private lotery_players;
+    CheckpointLotteryPlayer[] private lottery_players;
     address payable private owner_beneficiary;
     uint256 private startDate;
     uint256 private endDate; 
@@ -51,6 +51,7 @@ contract Lottery is Ownable, AccessControl {
         ENTER_PRICE = _enter_price;
         percentageLessPriceResult = uint256(20);
         transferOwnership(_owner_contract);
+        _setupRole(LOTTERY_ROLE, _owner_contract);
     }
     
     function start_new_lottery(uint256 _startDate, uint256 _endDate) external onlyOwner {
@@ -82,7 +83,7 @@ contract Lottery is Ownable, AccessControl {
         require(uint256(msg.value) == ENTER_PRICE, "The price to enter is not correct.");
         require(lottery_state == LOTTERY_STATE.OPEN, "The lottery hasn't even started!");
         players.push(msg.sender);
-        lotery_players.push(CheckpointLotteryPlayer({
+        lottery_players.push(CheckpointLotteryPlayer({
             value: uint256(msg.value),
             fromBlock: uint128(block.number),
             player: msg.sender,
@@ -168,9 +169,9 @@ contract Lottery is Ownable, AccessControl {
             _endDate 
         ));
         uint j = 0;
-        for(uint i = 0; i < lotery_players.length; i++) {
-            if(lotery_players[i].startDate >= _startDate && lotery_players[i].endDate <= _endDate){
-                playersFound[j] = lotery_players[i];
+        for(uint i = 0; i < lottery_players.length; i++) {
+            if(lottery_players[i].startDate >= _startDate && lottery_players[i].endDate <= _endDate){
+                playersFound[j] = lottery_players[i];
                 j++;
             }
         }
@@ -179,8 +180,8 @@ contract Lottery is Ownable, AccessControl {
 
     function getPlayersFromToDateCount( uint256 _startDate, uint256 _endDate) private returns(uint256){
         uint256 resultCount = 0;
-        for(uint i = 0; i < lotery_players.length; i++){
-            if(lotery_players[i].startDate >= _startDate && lotery_players[i].endDate <= _endDate){
+        for(uint i = 0; i < lottery_players.length; i++){
+            if(lottery_players[i].startDate >= _startDate && lottery_players[i].endDate <= _endDate){
                 resultCount++;
             }
         }
@@ -241,11 +242,11 @@ contract Lottery is Ownable, AccessControl {
 
     function getPositionsFromToDateCount( address _address, uint256 _startDate, uint256 _endDate) private returns(uint256){
         uint256 resultCount = 0;
-        for(uint i = 0; i < lotery_players.length; i++){
+        for(uint i = 0; i < lottery_players.length; i++){
             if(
-                lotery_players[i].startDate >= _startDate && 
-                lotery_players[i].endDate <= _endDate &&
-                lotery_players[i].player == _address
+                lottery_players[i].startDate >= _startDate &&
+                lottery_players[i].endDate <= _endDate &&
+                lottery_players[i].player == _address
             ){
                 resultCount++;
             }
@@ -275,20 +276,20 @@ contract Lottery is Ownable, AccessControl {
         if(limit > 0){
             uint j = 0;
             for(
-                uint i = lotery_players.length - 1; 
-                (i >= 0 && i < lotery_players.length) && (j < limit ); 
+                uint i = lottery_players.length - 1;
+                (i >= 0 && i < lottery_players.length) && (j < limit );
                 i--
             ) {
                 if(
-                lotery_players[i].startDate >= _startDate && 
-                lotery_players[i].endDate <= _endDate &&
-                lotery_players[i].player == _address
+                lottery_players[i].startDate >= _startDate &&
+                lottery_players[i].endDate <= _endDate &&
+                lottery_players[i].player == _address
                 ){
-                    value_r[j] = lotery_players[i].value;
-                    startDate_r[j] = lotery_players[i].startDate;
-                    endDate_r[j] = lotery_players[i].endDate;
-                    fromBlock_r[j] = lotery_players[i].fromBlock;
-                    player_r[j] = lotery_players[i].player;
+                    value_r[j] = lottery_players[i].value;
+                    startDate_r[j] = lottery_players[i].startDate;
+                    endDate_r[j] = lottery_players[i].endDate;
+                    fromBlock_r[j] = lottery_players[i].fromBlock;
+                    player_r[j] = lottery_players[i].player;
                     j++;
                 }
             }
