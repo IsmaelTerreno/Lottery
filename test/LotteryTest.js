@@ -35,7 +35,7 @@ contract("Lottery", async accounts => {
         const numberOfDayToAdd = 1;
         endDate.setDate(endDate.getDate() + numberOfDayToAdd );
         await instance.start_new_lottery.sendTransaction(startDate.getTime(), endDate.getTime(),{ from: CONTRACT_OWNER });
-        status = await instance.getStatus.call({ from: account_one });
+        const status = await instance.getStatus.call({ from: account_one });
         assert.equal(
             status.toNumber() === LOTTERY_STATE.OPEN,
             true,

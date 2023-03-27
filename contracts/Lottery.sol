@@ -80,8 +80,10 @@ contract Lottery is Ownable, AccessControl {
     }
 
     function enter() external payable {
+        // by convention use require to test passed values
         require(uint256(msg.value) == ENTER_PRICE, "The price to enter is not correct.");
-        require(lottery_state == LOTTERY_STATE.OPEN, "The lottery hasn't even started!");
+        // by convention use assert to test internal conditions
+        assert(lottery_state == LOTTERY_STATE.OPEN, "The lottery hasn't even started!");
         players.push(msg.sender);
         lottery_players.push(CheckpointLotteryPlayer({
             value: uint256(msg.value),
