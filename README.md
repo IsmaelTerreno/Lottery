@@ -1,6 +1,9 @@
 # Lottery
-Just a POC to use solidity smart contract demo
+## General description 
+This smart contract is a lottery contract that allows players to enter by sending a specific amount of ether to the contract. The lottery can be started by the owner or a user with the proper role and has a defined start and end date. After the lottery ends, the contract randomly selects a winner from the players who entered and transfers the prize to the winner. The contract also keeps a record of the past winners and their respective prizes. Additionally, the contract provides functions to get the current status of the lottery, the current balance of the contract, and the number of positions entered by a specific player within a specific date range. The contract also allows the owner to add or remove lottery workers with proper roles.
 
+
+## Extended details about public functions
 This is a smart contract called "Lottery" that manages a lottery system where users can enter by sending the correct amount of ether to the contract. The contract has the following functionality:
 The contract has: 
 - A state variable called "lottery_state" which is an enum that can have three possible values: "OPEN", "CLOSED", and "CALCULATING_WINNER". This variable determines the state of the lottery and is used to prevent certain actions from being taken during certain states.
