@@ -23,3 +23,7 @@ The contract has:
 - Inherits from the "Ownable" and "AccessControl" contracts from OpenZeppelin. The "Ownable" contract provides basic access control with an owner who can approve certain actions. The "AccessControl" contract allows for more fine-grained access control with roles that can be assigned to users.
 - Has several events that are emitted during various actions. These events include "NewPlayerTicketAdded", "NewWinnerAdded", "LotteryHasEnded", "CalculatingWinner", "LotteryHasStarted", and "WinnerSelectedInDate". These events provide information about the actions taken in the contract and can be used for off-chain analysis.
 - Has several functions for managing the lottery. These functions include "start_new_lottery", "start_new_lottery_with", "add_lottery_worker", "isLotteryAdmin", "enter", "pickWinner", "pick_winner_with", "getLastWinner", "getLast40Winners", "getWinnerAtBlock", "getPlayersFromToDate", "getPlayersFromToDateCount", "getMainBalance", "getStatus", "getRandomWinner", "updateWinnerHistory", "calculateBenefitResult"
+
+## Dapp that uses this smart contract
+[This can be found on this repository](https://github.com/IsmaelTerreno/Lottery-UI) where you can see a reactjs app that consumes this contract.
+Also there is a [live demo on this Dapp here](https://github.com/IsmaelTerreno/Lottery-UI/deployments/activity_log?environment=Production).
