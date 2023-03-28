@@ -24,6 +24,9 @@ The contract has:
 - Has several events that are emitted during various actions. These events include "NewPlayerTicketAdded", "NewWinnerAdded", "LotteryHasEnded", "CalculatingWinner", "LotteryHasStarted", and "WinnerSelectedInDate". These events provide information about the actions taken in the contract and can be used for off-chain analysis.
 - Has several functions for managing the lottery. These functions include "start_new_lottery", "start_new_lottery_with", "add_lottery_worker", "isLotteryAdmin", "enter", "pickWinner", "pick_winner_with", "getLastWinner", "getLast40Winners", "getWinnerAtBlock", "getPlayersFromToDate", "getPlayersFromToDateCount", "getMainBalance", "getStatus", "getRandomWinner", "updateWinnerHistory", "calculateBenefitResult"
 
+
+**NOTE**: This is just a POC to use solidity smart contract demo
+
 ## Dapp that uses this smart contract
 [This can be found on this repository](https://github.com/IsmaelTerreno/Lottery-UI) where you can see a reactjs app that consumes this contract.
 Also there is a [live demo on this Dapp here](https://github.com/IsmaelTerreno/Lottery-UI/deployments/activity_log?environment=Production).
