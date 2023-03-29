@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.6.0 <0.8.0;
-import "@openzeppelin/contracts/math/SafeMath.sol";
+pragma solidity ^0.8.13;
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
 contract Lottery is Ownable, AccessControl {
     enum LOTTERY_STATE { OPEN, CLOSED, CALCULATING_WINNER }
     LOTTERY_STATE private lottery_state;
-    address payable[] private players;
+    address[] private players;
     CheckpointLotteryPlayer[] private lottery_players;
     address payable private owner_beneficiary;
     uint256 private startDate;
@@ -83,7 +83,7 @@ contract Lottery is Ownable, AccessControl {
         // by convention use require to test passed values
         require(uint256(msg.value) == ENTER_PRICE, "The price to enter is not correct.");
         // by convention use assert to test internal conditions
-        assert(lottery_state == LOTTERY_STATE.OPEN, "The lottery hasn't even started!");
+        require(lottery_state == LOTTERY_STATE.OPEN, "The lottery hasn't even started!");
         players.push(msg.sender);
         lottery_players.push(CheckpointLotteryPlayer({
             value: uint256(msg.value),
@@ -115,7 +115,7 @@ contract Lottery is Ownable, AccessControl {
         payable(owner_beneficiary).transfer(calculateBenefitResult());
         updateWinnerHistory(winnerSelected.player, getBalance());
         emit WinnerSelectedInDate(winnerSelected.player, getBalance(), startDate, endDate);
-        payable(winnerSelected.player).transfer(getBalance());
+        payable(address(winnerSelected.player)).transfer(getBalance());
         lottery_state = LOTTERY_STATE.CLOSED;
         emit LotteryHasEnded(endDate);
     }
